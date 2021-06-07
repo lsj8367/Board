@@ -1,4 +1,4 @@
-package com.lsj.board;
+package com.lsj.board.web;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
