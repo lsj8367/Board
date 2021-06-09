@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 //@SpringBootTest
 //@AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
-@WebMvcTest
+@WebMvcTest(HelloController.class) //HelloController에 대한 테스트만 진행
 class HelloControllerTest {
 
     @Autowired
