@@ -13,7 +13,7 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @PostMapping("/api/v1/board")
+    @PostMapping("/api/v1/board/save")
     public Long save(@RequestBody BoardSaveRequestDto requestDto){
         return boardService.save(requestDto);
     }

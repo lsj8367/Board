@@ -12,4 +12,9 @@ public class IndexController {
         model.addAttribute("test", "테스트용");
         return "index";
     }
+
+    @RequestMapping("/saveBoard")
+    public String boardSave(){
+        return "saveBoard";
+    }
 }
