@@ -12,8 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@SpringBootTest
-//@AutoConfigureMockMvc
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(HelloController.class) //HelloController에 대한 테스트만 진행
 class HelloControllerTest {
