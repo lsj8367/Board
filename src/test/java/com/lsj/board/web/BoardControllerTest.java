@@ -8,11 +8,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +37,29 @@ class BoardControllerTest {
     }
 
     @Test
+    @DisplayName("BoardController Select")
+    public void selectBoards() throws Exception{
+        String title = "title";
+        String content = "content";
+        String author = "author";
+
+
+        Board board = Board.builder()
+                           .title(title)
+                           .content(content)
+                           .author(author)
+                           .build();
+
+        boardRepository.save(board);
+        List<Board> boards = boardRepository.findAll();
+
+        assertThat(boards.get(0).getTitle()).isEqualTo(title);
+        assertThat(boards.get(0).getAuthor()).isEqualTo(author);
+        assertThat(boards.get(0).getContent()).isEqualTo(content);
+    }
+
+
+    @Test
     @DisplayName("BoardController Insert")
     public void insertDatas() throws Exception{
         //given
@@ -48,7 +73,7 @@ class BoardControllerTest {
                                                      .author(author)
                                                      .build();
 
-        String url = "http://localhost:" + port + "/api/v1/board";
+        String url = "http://localhost:" + port + "/api/v1/board/save";
         //when
         ResponseEntity<Long> responseEntity = testRestTemplate.postForEntity(url, dto, Long.class);
 
