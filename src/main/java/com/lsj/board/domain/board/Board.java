@@ -1,15 +1,13 @@
 package com.lsj.board.domain.board;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "Board")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
