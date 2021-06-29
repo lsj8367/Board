@@ -124,9 +124,8 @@ class BoardControllerTest {
                                                       .author("author")
                                                       .build());
 
-        Long updateId = updateBoard.getId();
-
-        String updateTitle = "asdklaj";
+        Long updateId        = updateBoard.getId();
+        String updateTitle   = "asdklaj";
         String updateContent = "asdhaskdj";
 
         BoardUpdateRequestDto requestDto = BoardUpdateRequestDto.builder()
@@ -135,17 +134,16 @@ class BoardControllerTest {
                                                                 .build();
 
         //when
-        mockMvc.perform(put("/api/v1/board/"  + updateId).contentType(MediaType.APPLICATION_JSON)
-                                                                   .content(new ObjectMapper().writeValueAsString(requestDto)))
-                                                                   .andExpect(status().isOk())
-                                                                   .andDo(print());
+        mockMvc.perform(put("/api/v1/board/"  + updateId)
+               .contentType(MediaType.APPLICATION_JSON)
+               .content(new ObjectMapper().writeValueAsString(requestDto)))
+               .andExpect(status().isOk())
+               .andDo(print());
 
 
         //then
-        List<Board> all = boardRepository.findAll();
-
-        assertThat(all.get(0).getTitle()).isEqualTo(updateTitle);
-        assertThat(all.get(0).getContent()).isEqualTo(updateContent);
+        assertThat(updateBoard.getTitle()).isEqualTo(updateTitle);
+        assertThat(updateBoard.getContent()).isEqualTo(updateContent);
     }
 
     @Test
@@ -157,13 +155,7 @@ class BoardControllerTest {
                                            .author("author")
                                            .build());
 
-        Optional<Board> optionalBoard = boardRepository.findById(board.getId());
-
         //when
-//        optionalBoard.ifPresent(b -> {
-//            boardRepository.delete(b);
-//        });
-
         mockMvc.perform(delete("/api/v1/board/" + board.getId())
                .contentType(MediaType.APPLICATION_JSON))
                .andExpect(status().isOk())
