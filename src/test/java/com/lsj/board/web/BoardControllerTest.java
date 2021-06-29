@@ -29,12 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class BoardControllerTest {
 
-//    @LocalServerPort
-//    private int port;
-
-//    @Autowired
-//    private TestRestTemplate testRestTemplate;
-
     @Autowired
     private BoardRepository boardRepository;
 
@@ -140,10 +134,12 @@ class BoardControllerTest {
                .andExpect(status().isOk())
                .andDo(print());
 
+        List<Board> boards = boardRepository.findAll();
+        Board result = boards.get(0);
 
         //then
-        assertThat(updateBoard.getTitle()).isEqualTo(updateTitle);
-        assertThat(updateBoard.getContent()).isEqualTo(updateContent);
+        assertThat(result.getTitle()).isEqualTo(updateTitle);
+        assertThat(result.getContent()).isEqualTo(updateContent);
     }
 
     @Test
