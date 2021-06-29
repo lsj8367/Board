@@ -1,5 +1,6 @@
 package com.lsj.board.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsj.board.domain.board.Board;
 import com.lsj.board.domain.board.BoardRepository;
 import com.lsj.board.web.dto.BoardSaveRequestDto;
@@ -8,33 +9,38 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) //내장 톰캣 사용으로 RestTemplate사용가능
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK) //MOCK객체 환경
-//@AutoConfigureMockMvc
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) //내장 톰캣 사용으로 RestTemplate사용가능
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK) //MOCK객체 환경
+@AutoConfigureMockMvc
 class BoardControllerTest {
 
-    @LocalServerPort
-    private int port;
+//    @LocalServerPort
+//    private int port;
 
-    @Autowired
-    private TestRestTemplate testRestTemplate;
+//    @Autowired
+//    private TestRestTemplate testRestTemplate;
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private MockMvc mockMvc;
+
 
     @AfterEach
     public void cleanAll() throws Exception{
@@ -66,17 +72,16 @@ class BoardControllerTest {
     @Test
     @DisplayName("글 상세보기")
     void selectOne() throws Exception{
-        Board board = Board.builder()
-                           .title("제목")
-                           .content("내용")
-                           .author("작성자")
-                           .build();
-        boardRepository.save(board);
+        Board board = boardRepository.save(Board.builder()
+                                     .title("제목")
+                                     .content("내용")
+                                     .author("작성자")
+                                     .build());
 
         Optional<Board> optBoard = boardRepository.findById(board.getId());
-        Board resultBoard = optBoard.orElseThrow(
-                            () -> new NoSuchElementException("게시글이 없음")
-                            );
+        Board resultBoard = optBoard.orElseThrow(() -> new NoSuchElementException("게시글이 없음"));
+
+
         assertThat(resultBoard.getTitle()).isEqualTo("제목");
         assertThat(resultBoard.getContent()).isEqualTo("내용");
         assertThat(resultBoard.getAuthor()).isEqualTo("작성자");
@@ -97,14 +102,13 @@ class BoardControllerTest {
                                                      .author(author)
                                                      .build();
 
-        String url = "http://localhost:" + port + "/api/v1/board/save";
         //when
-        ResponseEntity<Long> responseEntity = testRestTemplate.postForEntity(url, dto, Long.class);
+        mockMvc.perform(post("/api/v1/board/save").contentType(MediaType.APPLICATION_JSON)
+                                                            .content(new ObjectMapper().writeValueAsString(dto)))
+                                                            .andExpect(status().isOk())
+                                                            .andDo(print());
 
         //then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isGreaterThan(0L);
-
         List<Board> list = boardRepository.findAll();
 
         assertThat(list.get(0).getTitle()).isEqualTo(title);
@@ -130,16 +134,15 @@ class BoardControllerTest {
                                                                 .content(updateContent)
                                                                 .build();
 
-        String url = "http://localhost:" + port + "/api/v1/board/" + updateId;
-        HttpEntity<BoardUpdateRequestDto> requestEntity = new HttpEntity<>(requestDto);
 
         //when
-        ResponseEntity<Long> responseEntity = testRestTemplate.exchange(url, HttpMethod.PUT, requestEntity, Long.class);
+        mockMvc.perform(put("/api/v1/board/"  + updateId).contentType(MediaType.APPLICATION_JSON)
+                                                                   .content(new ObjectMapper().writeValueAsString(requestDto)))
+                                                                   .andExpect(status().isOk())
+                                                                   .andDo(print());
+
 
         //then
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody()).isGreaterThan(0L);
-
         List<Board> all = boardRepository.findAll();
 
         assertThat(all.get(0).getTitle()).isEqualTo(updateTitle);
