@@ -19,8 +19,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -134,7 +134,6 @@ class BoardControllerTest {
                                                                 .content(updateContent)
                                                                 .build();
 
-
         //when
         mockMvc.perform(put("/api/v1/board/"  + updateId).contentType(MediaType.APPLICATION_JSON)
                                                                    .content(new ObjectMapper().writeValueAsString(requestDto)))
@@ -147,6 +146,31 @@ class BoardControllerTest {
 
         assertThat(all.get(0).getTitle()).isEqualTo(updateTitle);
         assertThat(all.get(0).getContent()).isEqualTo(updateContent);
+    }
 
+    @Test
+    void deleteBoard() throws Exception{
+        //given
+        Board board = boardRepository.save(Board.builder()
+                                           .title("title")
+                                           .content("content")
+                                           .author("author")
+                                           .build());
+
+        Optional<Board> optionalBoard = boardRepository.findById(board.getId());
+
+        //when
+//        optionalBoard.ifPresent(b -> {
+//            boardRepository.delete(b);
+//        });
+
+        mockMvc.perform(delete("/api/v1/board/" + board.getId())
+               .contentType(MediaType.APPLICATION_JSON))
+               .andExpect(status().isOk())
+               .andDo(print());
+
+        //then
+        Optional<Board> deleteBoard = boardRepository.findById(board.getId());
+        assertFalse(deleteBoard.isPresent());
     }
 }

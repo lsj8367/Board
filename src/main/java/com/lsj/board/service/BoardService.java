@@ -17,7 +17,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     public List<Board> search(){
-       return boardRepository.findAll();
+       return boardRepository.findAllDesc();
     }
 
     public Optional<Board> searchOne(Long id) {
@@ -37,6 +37,11 @@ public class BoardService {
         board.setTitle(requestDto.getTitle());
         board.setContent(requestDto.getContent());
         return id;
+    }
+
+    @Transactional
+    public void delete(Long id){
+        boardRepository.deleteById(id);
     }
 
 }

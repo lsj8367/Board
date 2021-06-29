@@ -35,4 +35,10 @@ public class BoardController {
     public Long update(@PathVariable Long id, @RequestBody BoardUpdateRequestDto requestDto){
         return boardService.update(id, requestDto);
     }
+
+    @DeleteMapping("/api/v1/board/{id}")
+    public void delete(@PathVariable Long id){
+
+        boardService.delete(id);
+    }
 }
