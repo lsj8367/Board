@@ -44,4 +44,10 @@ public class BoardService {
         boardRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteAll(){
+        boardRepository.deleteAll();
+    }
+
+
 }

@@ -3,19 +3,24 @@ package com.lsj.board.web;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lsj.board.domain.board.Board;
 import com.lsj.board.domain.board.BoardRepository;
+import com.lsj.board.service.BoardService;
 import com.lsj.board.web.dto.BoardSaveRequestDto;
 import com.lsj.board.web.dto.BoardUpdateRequestDto;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,8 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 //@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT) //내장 톰캣 사용으로 RestTemplate사용가능
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK) //MOCK객체 환경
+@WebMvcTest
 @AutoConfigureMockMvc
 class BoardControllerTest {
+
+    @Autowired
+    private BoardService boardService;
 
     @Autowired
     private BoardRepository boardRepository;
@@ -35,27 +44,43 @@ class BoardControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private WebApplicationContext ctx;
+
+    @BeforeEach
+    void setUp(){
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
+                                      .alwaysDo(print()) //항상 HTTP 통신 request, response 결과 반환
+                                      .addFilters(new CharacterEncodingFilter("UTF-8", true)) //utf8설정
+                                      .build();
+    }
 
     @AfterEach
-    public void cleanAll() throws Exception{
-        boardRepository.deleteAll();
+    void cleanAll() throws Exception{
+        boardService.deleteAll();
     }
 
     @Test
     @DisplayName("BoardController Select")
-    public void selectBoards() throws Exception{
+    void selectBoards() throws Exception{
+        //given
         String title = "title";
         String content = "content";
         String author = "author";
 
 
-        Board board = Board.builder()
+        Board board = boardRepository.save(Board.builder()
                            .title(title)
                            .content(content)
                            .author(author)
-                           .build();
+                           .build());
+        //when
+        mockMvc.perform(get("/api/v1/board")
+               .contentType(MediaType.APPLICATION_JSON)
+               .content(new ObjectMapper().writeValueAsString(board)))
+               .andExpect(status().isOk());
 
-        boardRepository.save(board);
+        //then
         List<Board> boards = boardRepository.findAll();
 
         assertThat(boards.get(0).getTitle()).isEqualTo(title);
@@ -72,19 +97,17 @@ class BoardControllerTest {
                                      .author("작성자")
                                      .build());
 
-        Optional<Board> optBoard = boardRepository.findById(board.getId());
-        Board resultBoard = optBoard.orElseThrow(() -> new NoSuchElementException("게시글이 없음"));
+//        Optional<Board> optBoard = boardRepository.findById(board.getId());
+//        Board resultBoard = optBoard.orElseThrow(() -> new NoSuchElementException("게시글이 없음"));
 
-
-        assertThat(resultBoard.getTitle()).isEqualTo("제목");
-        assertThat(resultBoard.getContent()).isEqualTo("내용");
-        assertThat(resultBoard.getAuthor()).isEqualTo("작성자");
+        mockMvc.perform(post("/api/v1/board/1")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
-
 
     @Test
     @DisplayName("BoardController Insert")
-    public void insertDatas() throws Exception{
+    void insertDatas() throws Exception{
         //given
         String title   = "title";
         String content = "content";
