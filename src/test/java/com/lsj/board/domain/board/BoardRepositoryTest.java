@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,6 +26,29 @@ class BoardRepositoryTest {
     @AfterEach
     public void cleanDatas(){
         boardRepository.deleteAll();
+    }
+
+    @Test
+    void BaseTimeEntityTest(){
+        //given
+        LocalDateTime now = LocalDateTime.of(2021, 7, 6, 0, 0, 0);
+        boardRepository.save(Board.builder()
+                                  .title("title")
+                                  .content("content")
+                                  .author("author")
+                                  .build());
+
+        //when
+        List<Board> boardList = boardRepository.findAll();
+
+        //then
+        Board board = boardList.get(0);
+
+        System.out.println("-----생성일-----" + board.getCreatedDate());
+        System.out.println("-----수정일-----" + board.getModifiedDate());
+
+        assertThat(board.getCreatedDate()).isAfter(now);
+        assertThat(board.getModifiedDate()).isAfter(now);
     }
 
     @Test
