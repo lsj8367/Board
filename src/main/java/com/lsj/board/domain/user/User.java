@@ -1,9 +1,6 @@
 package com.lsj.board.domain.user;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,17 +11,22 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString
+@AllArgsConstructor
 public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    private String name;
 
     private String userId;
 
     private String password;
 
     @Builder
-    public User(String userId, String password) {
+    public User(String name, String userId, String password) {
+        this.name = name;
         this.userId = userId;
         this.password = password;
     }

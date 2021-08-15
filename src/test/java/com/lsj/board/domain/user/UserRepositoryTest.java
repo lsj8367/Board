@@ -1,12 +1,11 @@
 package com.lsj.board.domain.user;
 
-import org.junit.jupiter.api.AfterEach;
+import com.lsj.board.config.QuerydslConfiguration;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 
@@ -14,17 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@ExtendWith(SpringExtension.class)
 @DataJpaTest
+@Import(QuerydslConfiguration.class)
 class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @AfterEach
-    void cleanDatas(){
-        userRepository.deleteAll();
-    }
 
     @Test
     @DisplayName("생성")
@@ -78,5 +72,18 @@ class UserRepositoryTest {
         Optional<User> deleteUser = userRepository.findById(getId);
         //무조건 false
         assertFalse(deleteUser.isPresent());
+    }
+
+    @Test
+    void findByName() {
+        User user = userRepository.save(User.builder()
+                        .name("홍길동")
+                        .userId("abc")
+                        .password("123")
+                        .build());
+
+        User result = userRepository.findByName("홍길동");
+
+        assertThat(result.getName()).isEqualTo("홍길동");
     }
 }
