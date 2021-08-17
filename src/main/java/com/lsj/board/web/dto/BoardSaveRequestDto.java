@@ -1,5 +1,6 @@
 package com.lsj.board.web.dto;
 
+import com.lsj.board.domain.board.ArticleLayout;
 import com.lsj.board.domain.board.Board;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,8 +22,7 @@ public class BoardSaveRequestDto {
 
     public Board toEntity(){
         return Board.builder()
-                    .title(title)
-                    .content(content)
+                    .articleLayout(new ArticleLayout(title, content))
                     .author(author)
                     .build();
     }

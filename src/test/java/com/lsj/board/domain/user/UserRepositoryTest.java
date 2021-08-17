@@ -1,17 +1,16 @@
 package com.lsj.board.domain.user;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import com.lsj.board.config.QuerydslConfiguration;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 @Import(QuerydslConfiguration.class)
@@ -76,7 +75,7 @@ class UserRepositoryTest {
 
     @Test
     void findByName() {
-        User user = userRepository.save(User.builder()
+        userRepository.save(User.builder()
                         .name("홍길동")
                         .userId("abc")
                         .password("123")

@@ -1,15 +1,14 @@
 package com.lsj.board.service;
 
+import com.lsj.board.domain.board.ArticleLayout;
 import com.lsj.board.domain.board.Board;
 import com.lsj.board.domain.board.BoardRepository;
 import com.lsj.board.web.dto.BoardSaveRequestDto;
-import com.lsj.board.web.dto.BoardUpdateRequestDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -30,12 +29,11 @@ public class BoardService {
     }
 
     @Transactional
-    public Long update(Long id, BoardUpdateRequestDto requestDto) {
-        Board board = boardRepository.findById(id)
-                                     .orElseThrow(() -> new IllegalArgumentException("해당하는 게시판글 없음"));
+    public Long update(Long id, ArticleLayout articleLayout) {
+        boardRepository.findById(id)
+                       .orElseThrow(() -> new IllegalArgumentException("해당하는 게시판글 없음"))
+                       .setArticleLayout(articleLayout);
 
-        board.setTitle(requestDto.getTitle());
-        board.setContent(requestDto.getContent());
         return id;
     }
 

@@ -1,14 +1,19 @@
 package com.lsj.board.web;
 
+import com.lsj.board.domain.board.ArticleLayout;
 import com.lsj.board.domain.board.Board;
 import com.lsj.board.service.BoardService;
 import com.lsj.board.web.dto.BoardSaveRequestDto;
-import com.lsj.board.web.dto.BoardUpdateRequestDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,8 +37,8 @@ public class BoardController {
     }
 
     @PutMapping("/api/v1/board/{id}")
-    public Long update(@PathVariable Long id, @RequestBody BoardUpdateRequestDto requestDto){
-        return boardService.update(id, requestDto);
+    public Long update(@PathVariable Long id, @RequestBody ArticleLayout articleLayout){
+        return boardService.update(id, articleLayout);
     }
 
     @DeleteMapping("/api/v1/board/{id}")
